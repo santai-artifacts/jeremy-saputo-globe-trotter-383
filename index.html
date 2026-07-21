@@ -59,7 +59,7 @@
     <h1>Hello World</h1>
     <canvas id="canvas"></canvas>
     <div class="controls">
-        <p>Drag to spin the globe — it'll keep spinning with momentum</p>
+        <p>Drag to rotate the globe</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -91,20 +91,34 @@
         renderer.setClearColor(0x000000);
         camera.position.z = 2.5;
 
-        // Create canvas texture for Earth
+        // Create canvas texture for Earth with realistic colors
         const textureCanvas = document.createElement('canvas');
         textureCanvas.width = 2048;
         textureCanvas.height = 1024;
         const ctx = textureCanvas.getContext('2d');
 
-        // Draw ocean
-        ctx.fillStyle = '#1e90ff';
+        // Ocean base
+        ctx.fillStyle = '#1a4d7a';
         ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
 
-        // Draw continents
-        ctx.fillStyle = '#2ecc71';
+        // Add ocean depth variation
+        for (let i = 0; i < 500; i++) {
+            ctx.fillStyle = `rgba(26, 77, 122, ${Math.random() * 0.15})`;
+            ctx.fillRect(
+                Math.random() * textureCanvas.width,
+                Math.random() * textureCanvas.height,
+                Math.random() * 100,
+                Math.random() * 100
+            );
+        }
 
-        // Helper to draw continent
+        // Land colors
+        const landColor = '#2d5a3d';
+        const desertColor = '#c4a747';
+
+        ctx.fillStyle = landColor;
+
+        // Helper to draw continent with better shapes
         function drawContinent(startX, startY, points) {
             ctx.beginPath();
             ctx.moveTo(startX + points[0][0], startY + points[0][1]);
@@ -116,51 +130,76 @@
         }
 
         // North America
-        drawContinent(100, 300, [[0, 0], [40, -30], [80, -20], [100, 20], [80, 80], [40, 70], [20, 50]]);
-        drawContinent(120, 250, [[0, 0], [30, -20], [35, 20], [20, 30]]);
+        drawContinent(80, 280, [[0, 0], [50, -40], [100, -30], [120, 30], [100, 100], [40, 90], [10, 60]]);
 
         // South America
-        drawContinent(150, 480, [[0, 0], [40, -20], [50, 20], [45, 120], [20, 140], [0, 100]]);
+        drawContinent(140, 450, [[0, 0], [50, -30], [65, 20], [55, 150], [15, 160], [-5, 100]]);
 
         // Europe/Africa
-        drawContinent(400, 280, [[0, 0], [60, -40], [80, 20], [70, 100], [40, 140], [20, 100], [10, 50]]);
-        drawContinent(420, 250, [[0, 0], [40, -30], [45, 10], [35, 30]]);
+        drawContinent(380, 250, [[0, 0], [80, -50], [100, 30], [90, 150], [40, 180], [10, 120], [-5, 50]]);
+
+        // Sahara Desert
+        ctx.fillStyle = desertColor;
+        drawContinent(420, 320, [[0, 0], [60, -20], [70, 50], [50, 80], [10, 70]]);
+        ctx.fillStyle = landColor;
 
         // Asia
-        drawContinent(550, 200, [[0, 0], [150, -50], [200, 50], [150, 150], [80, 140], [50, 80]]);
+        drawContinent(520, 180, [[0, 0], [180, -60], [230, 60], [180, 160], [80, 150], [40, 80]]);
 
         // India
-        drawContinent(680, 320, [[0, 0], [30, -10], [35, 50], [15, 60]]);
+        ctx.fillStyle = landColor;
+        drawContinent(680, 300, [[0, 0], [35, -15], [40, 60], [15, 70]]);
 
         // Southeast Asia
-        drawContinent(750, 340, [[0, 0], [50, -20], [60, 40], [30, 50]]);
+        drawContinent(750, 320, [[0, 0], [60, -25], [75, 45], [35, 60]]);
 
         // Australia
-        drawContinent(850, 420, [[0, 0], [60, -40], [75, 20], [70, 100], [40, 110], [10, 70]]);
-        drawContinent(920, 380, [[0, 0], [15, -15], [18, 30], [10, 40]]);
+        drawContinent(840, 400, [[0, 0], [70, -50], [90, 20], [85, 120], [40, 130], [0, 80]]);
 
-        // Back side (Pacific/Asia eastern)
-        drawContinent(1400, 280, [[0, 0], [40, -30], [50, 20], [40, 50]]);
-        drawContinent(1550, 240, [[0, 0], [80, -40], [100, 40], [70, 100]]);
+        // Back side - East Asia
+        drawContinent(1350, 260, [[0, 0], [50, -35], [65, 25], [50, 65]]);
+        drawContinent(1500, 200, [[0, 0], [100, -50], [130, 50], [85, 120]]);
 
-        // Antarctica hint
+        // Greenland hint
+        ctx.fillStyle = '#b8d4e8';
+        drawContinent(200, 180, [[0, 0], [40, -30], [45, 20], [20, 35]]);
+
+        // Antarctica
         ctx.fillStyle = '#e8e8e8';
-        ctx.globalAlpha = 0.6;
-        drawContinent(400, 850, [[0, 0], [150, -30], [250, -20], [300, 30], [200, 80], [50, 70]]);
+        ctx.globalAlpha = 0.7;
+        drawContinent(350, 900, [[0, 0], [200, -20], [300, 0], [350, 30], [200, 80], [0, 70]]);
         ctx.globalAlpha = 1;
 
         const texture = new THREE.CanvasTexture(textureCanvas);
-        const geometry = new THREE.SphereGeometry(1, 64, 64);
-        const material = new THREE.MeshPhongMaterial({ map: texture });
+        const geometry = new THREE.SphereGeometry(1, 128, 128);
+        const material = new THREE.MeshPhongMaterial({
+            map: texture,
+            shininess: 8,
+            emissive: 0x1a1a1a
+        });
         const globe = new THREE.Mesh(geometry, material);
+        globe.castShadow = true;
+        globe.receiveShadow = true;
         scene.add(globe);
 
-        // Lighting
-        const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
-        light1.position.set(5, 3, 5);
+        // Add subtle atmosphere effect
+        const atmosphereGeometry = new THREE.SphereGeometry(1.02, 128, 128);
+        const atmosphereMaterial = new THREE.MeshPhongMaterial({
+            color: 0x87ceeb,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.BackSide
+        });
+        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+        scene.add(atmosphere);
+
+        // Lighting - more realistic
+        const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
+        light1.position.set(8, 4, 8);
+        light1.castShadow = true;
         scene.add(light1);
 
-        const light2 = new THREE.AmbientLight(0xffffff, 0.4);
+        const light2 = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(light2);
 
         // Interaction with momentum
@@ -171,8 +210,8 @@
         let rotationY = 0;
         let velocityX = 0;
         let velocityY = 0;
-        const friction = 0.96; // Higher = slower deceleration
-        const maxVelocity = 0.5;
+        const friction = 0.98; // Higher = slower deceleration
+        const maxVelocity = 1.2;
 
         canvas.addEventListener('mousedown', (e) => {
             isDragging = true;
