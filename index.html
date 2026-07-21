@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Earth</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -26,14 +29,15 @@
 
         h1 {
             position: fixed;
-            top: 36px;
+            top: 28px;
             left: 50%;
             transform: translateX(-50%);
             color: rgba(255, 255, 255, 0.85);
             z-index: 2;
-            font-size: 28px;
-            font-weight: 300;
-            letter-spacing: 6px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 200;
+            letter-spacing: 8px;
             text-transform: uppercase;
             text-shadow: 0 0 20px rgba(100, 180, 255, 0.4);
             pointer-events: none;
@@ -41,14 +45,16 @@
 
         .controls {
             position: fixed;
-            bottom: 32px;
+            bottom: 28px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.45);
+            color: rgba(255, 255, 255, 0.4);
             text-align: center;
+            font-family: 'Outfit', sans-serif;
             font-size: 13px;
+            font-weight: 300;
             z-index: 2;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             pointer-events: none;
         }
 
@@ -57,8 +63,10 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             color: rgba(255, 255, 255, 0.6);
+            font-family: 'Outfit', sans-serif;
             font-size: 14px;
-            letter-spacing: 3px;
+            font-weight: 300;
+            letter-spacing: 4px;
             z-index: 10;
             transition: opacity 0.8s;
         }
@@ -87,7 +95,7 @@
         // Scene & Camera
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 3;
+        camera.position.z = 3.4;
 
         // --- Stars ---
         const starsGeo = new THREE.BufferGeometry();
@@ -307,9 +315,6 @@
                 if (Math.abs(velocityX) < 0.00001) velocityX = 0;
                 if (Math.abs(velocityY) < 0.00001) velocityY = 0;
             }
-
-            // Clamp vertical rotation
-            rotationX = Math.max(-1.2, Math.min(1.2, rotationX));
 
             earth.rotation.x = rotationX;
             earth.rotation.y = rotationY;
