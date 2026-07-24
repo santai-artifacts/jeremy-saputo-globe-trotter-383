@@ -1,3 +1,3 @@
-# Globe Trotter
+# Globe Trotters
 
 
